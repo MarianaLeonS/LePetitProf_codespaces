@@ -11,13 +11,18 @@ from datetime import datetime
 # Set the page configuration
 st.set_page_config(page_title="Le Petit Prof")
 
-# Load the camemBERT model and tokenizer with exception handling
-try:
-    tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
-    model = CamembertForSequenceClassification.from_pretrained("/workspaces/codespaces-blank/pages/camembert-model")  # Ensure your model is fine-tuned
-except Exception as e:
-    st.error(f"Error loading model: {e}")
-    st.stop()
+# Cache the loading of the model and tokenizer
+@st.cache_resource
+def load_model_and_tokenizer():
+    try:
+        tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
+        model = CamembertForSequenceClassification.from_pretrained("/workspaces/codespaces-blank/pages/camembert-model")  # Ensure your model is fine-tuned
+        return tokenizer, model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        st.stop()
+
+tokenizer, model = load_model_and_tokenizer()
 
 # Initialize spell checker
 spell = SpellChecker(language='fr')
@@ -43,12 +48,14 @@ common_contractions = [
     "qu'on sut", "qu'on crût", "qu'on prît", "qu'on vît", "qu'on mît", "qu'on pût"
 ]
 
+@st.cache_resource
 def classify_sentence(sentence):
     inputs = tokenizer(sentence, return_tensors="pt")
     outputs = model(**inputs)
     predictions = torch.argmax(outputs.logits, dim=1)
     return difficulty_levels[predictions.item()]
 
+@st.cache_resource
 def check_spelling(sentence):
     words = sentence.split()
     cleaned_words = [word.strip(string.punctuation) for word in words]  # Strip punctuation from words
@@ -79,9 +86,6 @@ def app():
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the header with the title and image
-    image_path = "/workspaces/codespaces-blank/pages/lepetitprince.jpg"
-    image_base64 = get_base64_image(image_path)
     st.markdown(
         f"""
         <div style="display: flex; align-items: center;">
@@ -93,12 +97,12 @@ def app():
     st.markdown(
         """
         <div style="font-size: 30px;">
-            Bonjour! Ready for a writting challenge?
+            Bonjour! Ready for a writing challenge?
         </div>
         """, unsafe_allow_html=True)
 
     st.header("✍️ Writing section")
-    st.write("🌟Welcome. Here you can practice you writing skills. I will give you a word taken from a quote of the book The Little Prince by Antoine de Saint-Exupéry (...obviously 😎) and will challenge you to write the most complex and advanced sentence that comes to your mind by using thet word.")
+    st.write("🌟Welcome. Here you can practice you writing skills. I will give you a word taken from a quote of the book The Little Prince by Antoine de Saint-Exupéry (...obviously 😎) and will challenge you to write the most complex and advanced sentence that comes to your mind by using the word.")
     st.write("🌟Then I will read it and tell you the difficulty level of your sentence.")
     st.write("🌟You can skip to a new quote if nothing comes up to you mind and click new sentence if you want to keep playing, all your sentences will be stored in a dictionary for you to track your progress! How cool is that? ")
 
@@ -189,3 +193,4 @@ def app():
 
 if __name__ == "__main__":
     app()
+

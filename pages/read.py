@@ -34,11 +34,12 @@ def app():
         st.session_state.user_attempts = pd.DataFrame(columns=['Attempt', 'Result', 'Estimated level', 'Timestamp'])
     if "all_rated_sentences" not in st.session_state:
         st.session_state.all_rated_sentences = pd.DataFrame(columns=['sentence', 'difficulty', 'Reply', 'Timestamp'])
+    if "started" not in st.session_state:
+        st.session_state.started = False
 
     # Add the header with the title and image
     image_path = "/workspaces/codespaces-blank/pages/lepetitprince.jpg"
     image_base64 = get_base64_image(image_path)
-    
 
     st.markdown("""
         <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&display=swap" rel="stylesheet">
@@ -49,9 +50,6 @@ def app():
         </style>
     """, unsafe_allow_html=True)
 
-    # Add the header with the title and image
-    image_path = "/workspaces/codespaces-blank/pages/lepetitprince.jpg"
-    image_base64 = get_base64_image(image_path)
     st.markdown(
         f"""
         <div style="display: flex; align-items: center;">
@@ -70,7 +68,6 @@ def app():
     st.header("📚Reading section")
     st.write("🌟Welcome. Here you can practice reading French sentences extracted from the book The Little Prince by Antoine de Saint-Exupéry and rating their difficulty.")   
     st.write("🌟Read the following sentences and drag the slider depending on how difficult it is for you to understand them. Then click submit and I will estimate what is your reading comprehension level. ")
-    
 
     if st.button("Start"):
         st.session_state.started = True
@@ -80,18 +77,19 @@ def app():
         st.session_state.subset['Reply'] = None
         reset_all_sliders(st.session_state.reset_iteration)
 
-    if "started" in st.session_state:
+    if st.session_state.get("started", False):
         user_responses = []
         for i in range(6):
             st.text_area(
                 f"🌟Sentence {i+1}", st.session_state.subset['sentence'][i], height=100, disabled=True, key=f"sentence_{i}_{st.session_state.reset_iteration}"
             )
             rating_key = f"rating_{i}_{st.session_state.reset_iteration}"
+            if rating_key not in st.session_state:
+                st.session_state[rating_key] = "Too easy"
             rating = st.select_slider(
                 f"Difficulty {i+1}",
                 options=["Too easy", "Easy", "Right level", "A bit difficult", "Very difficult", "Impossible to understand"],
                 key=rating_key,
-                value=st.session_state.get(rating_key, "Too easy")
             )
             user_responses.append(rating)
             rating_map = {
