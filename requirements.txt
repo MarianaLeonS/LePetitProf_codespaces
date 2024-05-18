@@ -1,0 +1,8 @@
+streamlit
+pandas
+torch
+transformers
+plotly
+pyspellchecker
+Pillow
+sentencepiece
