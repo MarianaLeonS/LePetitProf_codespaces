@@ -16,7 +16,7 @@ st.set_page_config(page_title="Le Petit Prof")
 def load_model_and_tokenizer():
     try:
         tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
-        model = CamembertForSequenceClassification.from_pretrained("/workspaces/codespaces-blank/pages/camembert-model")  # Ensure your model is fine-tuned
+        model = CamembertForSequenceClassification.from_pretrained("pages/camembert-model")  #relative path needed for deployment
         return tokenizer, model
     except Exception as e:
         st.error(f"Error loading model: {e}")
