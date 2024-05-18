@@ -74,7 +74,7 @@ def load_new_sentence(pp):
 
 def app():
     # Add the header with the title and image
-    image_path = "/workspaces/codespaces-blank/pages/lepetitprince.jpg"
+    image_path = "pages/lepetitprince.jpg"
     image_base64 = get_base64_image(image_path)
 
     st.markdown("""
@@ -110,7 +110,7 @@ def app():
     if "started" not in st.session_state:
         st.session_state.started = False
     if "pp" not in st.session_state:
-        st.session_state.pp = pd.read_csv("/workspaces/codespaces-blank/pages/pp.csv")
+        st.session_state.pp = pd.read_csv("pages/pp.csv")
     if "user_data" not in st.session_state:
         st.session_state.user_data = pd.DataFrame(columns=["Date", "Word", "Sentence", "Difficulty", "Spelling check"])
     if "random_sentence" not in st.session_state or "longest_word" not in st.session_state:

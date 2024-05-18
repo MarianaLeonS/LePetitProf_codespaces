@@ -24,7 +24,7 @@ def reset_all_sliders(reset_iteration):
 
 def app():
     # Load the full dataframe (book) with difficulty labels
-    book = pd.read_csv('/workspaces/codespaces-blank/pages/pp.csv')
+    book = pd.read_csv('pages/pp.csv')
 
     # Define difficulty levels
     difficulty_levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -38,7 +38,7 @@ def app():
         st.session_state.started = False
 
     # Add the header with the title and image
-    image_path = "/workspaces/codespaces-blank/pages/lepetitprince.jpg"
+    image_path = "pages/lepetitprince.jpg"
     image_base64 = get_base64_image(image_path)
 
     st.markdown("""
